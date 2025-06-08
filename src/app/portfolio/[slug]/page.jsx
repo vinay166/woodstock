@@ -55,7 +55,7 @@ const portfolioProjects = [
     location: 'Bangalore, Karnataka',
     year: '2022',
     services: ['Space Planning', 'Interior Design', 'Furniture Selection', 'Branding Integration'],
-    challenge: 'Creating a workspace that promotes collaboration while providing quiet areas for focused work, all while reflecting the company's innovative brand identity.',
+    challenge: 'Creating a workspace that promotes collaboration while providing quiet areas for focused work, all while reflecting the company\'s innovative brand identity.',
     solution: 'We designed an open floor plan with strategic acoustic treatments, flexible meeting spaces, and quiet pods, incorporating brand colors and values throughout.',
     testimonial: {
       quote: 'Our team productivity has increased significantly since moving into our new office. Woodstub understood exactly what we needed.',

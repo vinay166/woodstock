@@ -1,0 +1,13 @@
+{
+  "/api/contact/route": "/api/contact",
+  "/api/subscribe/route": "/api/subscribe",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/blog/page": "/blog",
+  "/contact/page": "/contact",
+  "/page": "/",
+  "/portfolio/[slug]/page": "/portfolio/[slug]",
+  "/portfolio/page": "/portfolio",
+  "/services/page": "/services",
+  "/blog/[slug]/page": "/blog/[slug]"
+}
