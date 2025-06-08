@@ -1,0 +1,237 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [pathname, setPathname] = useState('');
+
+  useEffect(() => {
+    // Get current pathname
+    setPathname(window.location.pathname);
+    
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // Close mobile menu when route changes and handle navigation
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setIsOpen(false);
+      setPathname(window.location.pathname);
+    };
+    
+    // Add event listener for client-side navigation
+    window.addEventListener('popstate', handleRouteChange);
+    
+    // Clean up
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
+
+  return (
+    <header 
+      className={`fixed w-full z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg py-3' 
+          : 'bg-transparent py-5'
+      }`}
+    >
+      {/* Top accent line */}
+      <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent via-accent/50 to-accent transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`}></div>
+      
+      <div className="container mx-auto px-6 flex justify-between items-center">
+        {/* Logo */}
+        <Link href="/" className="relative z-10 group">
+          <div className="relative">
+            <Image 
+              src="/logo.svg" 
+              alt="Woodstub Logo" 
+              width={150} 
+              height={60} 
+              className={`h-12 w-auto transition-all duration-300 ${
+                isScrolled ? 'scale-90' : 'scale-100'
+              }`}
+            />
+            <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-500"></div>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center space-x-1">
+          <NavLink href="/" isActive={pathname === '/'} isTransparent={!isScrolled && pathname === '/'}>Home</NavLink>
+          <NavLink href="/about" isActive={pathname === '/about'} isTransparent={!isScrolled && pathname === '/'}>About</NavLink>
+          <NavLink href="/services" isActive={pathname.startsWith('/services')} isTransparent={!isScrolled && pathname === '/'}>Services</NavLink>
+          <NavLink href="/portfolio" isActive={pathname.startsWith('/portfolio')} isTransparent={!isScrolled && pathname === '/'}>Portfolio</NavLink>
+          <NavLink href="/blog" isActive={pathname.startsWith('/blog')} isTransparent={!isScrolled && pathname === '/'}>Blog</NavLink>
+          <NavLink href="/contact" isActive={pathname === '/contact'} isTransparent={!isScrolled && pathname === '/'}>Contact</NavLink>
+          
+          {/* CTA Button */}
+          <Link 
+            href="/contact" 
+            className={`ml-4 px-5 py-2.5 rounded-full transition-all duration-300 ${
+              'bg-accent text-white hover:bg-accent/90'
+            }`}
+          >
+            Get a Quote
+          </Link>
+        </nav>
+
+        {/* Secondary Nav - Contact Info */}
+        <div className="hidden md:flex lg:hidden items-center">
+          <a 
+            href="tel:+918090881036" 
+            className={`flex items-center transition-colors duration-300 ${
+              isScrolled ? 'text-gray-700 hover:text-accent' : 'text-white hover:text-accent'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <span className="font-medium">+91 8090881036</span>
+          </a>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button 
+          className="lg:hidden z-20 relative group"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          <div className="w-7 h-7 flex flex-col items-center justify-center relative">
+            <span 
+              className={`transform transition-all duration-300 h-0.5 w-full rounded-full block absolute bg-gray-800 ${
+                isOpen ? 'rotate-45' : '-translate-y-1.5'
+              }`}
+            />
+            <span 
+              className={`transform transition-all duration-300 h-0.5 w-full rounded-full block absolute bg-gray-800 ${
+                isOpen ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+            <span 
+              className={`transform transition-all duration-300 h-0.5 w-full rounded-full block absolute bg-gray-800 ${
+                isOpen ? '-rotate-45' : 'translate-y-1.5'
+              }`}
+            />
+          </div>
+        </button>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-0 bg-gradient-to-b from-gray-900 to-black z-10 flex flex-col pt-24 px-8"
+            >
+              <nav className="flex flex-col space-y-6">
+                <MobileNavLink href="/" isActive={pathname === '/'}>Home</MobileNavLink>
+                <MobileNavLink href="/about" isActive={pathname === '/about'}>About</MobileNavLink>
+                <MobileNavLink href="/services" isActive={pathname.startsWith('/services')}>Services</MobileNavLink>
+                <MobileNavLink href="/portfolio" isActive={pathname.startsWith('/portfolio')}>Portfolio</MobileNavLink>
+                <MobileNavLink href="/blog" isActive={pathname.startsWith('/blog')}>Blog</MobileNavLink>
+                <MobileNavLink href="/contact" isActive={pathname === '/contact'}>Contact</MobileNavLink>
+              </nav>
+              
+              {/* Mobile Contact Info */}
+              <div className="mt-auto mb-12 border-t border-white/10 pt-6">
+                <h3 className="text-white/70 text-sm font-medium mb-4">Contact Us</h3>
+                <div className="space-y-4">
+                  <a href="tel:+918090881036" className="flex items-center text-white group">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-4 group-hover:bg-accent transition-colors duration-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                    <span>+91 8090881036</span>
+                  </a>
+                  <a href="mailto:woodstub41@gmail.com" className="flex items-center text-white group">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-4 group-hover:bg-accent transition-colors duration-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span>woodstub41@gmail.com</span>
+                  </a>
+                </div>
+                
+                {/* Social Icons */}
+                <div className="flex space-x-3 mt-6">
+                  {[
+                    { icon: 'M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z', href: 'https://www.facebook.com/groups/woodstub.in/?ref=share' },
+                    { icon: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z', href: 'https://instagram.com/woodstub.in' },
+                    { icon: 'M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z', href: 'https://twitter.com/Woodstub14' },
+                  ].map((social, index) => (
+                    <a 
+                      key={index}
+                      href={social.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-all duration-300 group"
+                    >
+                      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current text-white">
+                        <path d={social.icon} />
+                      </svg>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </header>
+  );
+};
+
+const NavLink = ({ href, children, isActive, isTransparent }) => {
+  return (
+    <Link 
+      href={href} 
+      className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
+        isActive ? 'text-accent' : 'text-gray-800 hover:text-accent'
+      }`}
+    >
+      <span className="relative z-10">{children}</span>
+      {isActive && (
+        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent"></span>
+      )}
+      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-300"></span>
+    </Link>
+  );
+};
+
+const MobileNavLink = ({ href, children, isActive, onClick }) => {
+  return (
+    <Link 
+      href={href} 
+      className={`text-2xl font-serif font-medium transition-colors duration-300 flex items-center ${
+        isActive ? 'text-accent' : 'text-white'
+      }`}
+      onClick={onClick}
+    >
+      {isActive && <span className="w-6 h-0.5 bg-accent mr-3"></span>}
+      {children}
+    </Link>
+  );
+};
+
+export default Header;
